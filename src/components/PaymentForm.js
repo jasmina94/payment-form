@@ -1,20 +1,17 @@
 import { ACTIONS } from '../machine/constants';
 import { useState } from 'react';
+import { useMachine } from '@xstate/react';
 import '../styles/form.scss';
 import paymentFormMachineDefinition from '../machine/state-machine-definition';
-import useMachine from '../machine/use-state-machine';
 
 
 const PaymentForm = () => {
     const [machine, send] = useMachine(paymentFormMachineDefinition);
-    const [form, updateForm] = useState({
-        name: "",
-        card: ""
-    });
+    const [form, updateForm] = useState({ name: "", card: ""});
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        send({ type: ACTIONS.CLICK, data: { ...form } });
+        send({ type: 'CLICK', data: { ...form } });
     };
 
     return (
@@ -22,16 +19,17 @@ const PaymentForm = () => {
             <div className="form-header">
                 <h2>State Machine Payment Form</h2>
                 <p>Current state: {machine.value}</p>
+                <p>Number of retries: {machine.context.retries}</p>
             </div>
 
-            {machine.matches("error") ? (
+            {/* {machine.matches("error") ? (
                 <div className="alert error">
                     {machine.context.msg
                     ? machine.context.msg
                     : "Oh no! No error message."}
                 </div>
                 ) : null
-            }
+            } */}
 
             <div className="form-body">
                 <form onSubmit={(e) => handleSubmit(e)}>
@@ -43,7 +41,7 @@ const PaymentForm = () => {
                 <div className="form-group">
                     <label htmlFor="CreditCardNumber">Card number</label>
                     <input id="CreditCardNumber" className="null card-image form-control" type="text"
-                        value={form.number} onChange={(e) => updateForm({...form, number: e.target.value})}/>
+                        value={form.card} onChange={(e) => updateForm({...form, card: e.target.value})}/>
                 </div>
                 <button id="PayButton" className="btn btn-block btn-success submit-button" type="submit">
                     <span className="submit-button-lock" />

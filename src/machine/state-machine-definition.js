@@ -5,7 +5,8 @@ import fakePaymentService from '../service/fakeService';
 const paymentFormMachineDefinition = createMachine({
     initial: STATES.IDLE,
     context: {
-        msg: ""
+        msg: "",
+        retries: 0
     },
     states: {
         idle: {
@@ -37,8 +38,9 @@ const paymentFormMachineDefinition = createMachine({
         },
         error: {
             on: {
-                RETRY: {
+                CLICK: {
                     target: STATES.LOADING,
+                    actions: assign({ retries: (ctx, event) => ctx.retries + 1}),
                     cond: (ctx, event) => event.data.name !== "" && event.data.card !== ""
                 }
             }
